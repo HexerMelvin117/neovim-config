@@ -7,27 +7,32 @@ return {
   },
   {
     "mason-org/mason-lspconfig.nvim",
-    opts = {},
     config = function()
       require("mason-lspconfig").setup({
-        ensure_installed = { "lua_ls", "rust_analyzer", "tsserver" }
+        ensure_installed = { "lua_ls", "rust_analyzer", "ts_ls" }
       })
     end,
     dependencies = {
-      { "mason-org/mason.nvim", opts = {} },
+      "mason-org/mason.nvim",
       "neovim/nvim-lspconfig",
     },
   },
   {
     "neovim/nvim-lspconfig",
+    dependencies = { "saghen/blink.cmp" },
     config = function()
-      vim.lsp.config('lua_ls', {})
-      vim.lsp.enable('lua_ls')
-      vim.lsp.config('tsserver', {})
-      vim.lsp.enable('tsserver')
-      vim.keymap.set('n', 'K', vim.lsp.buf.hover, {})
-      vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {})
-      vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, {})
+      local lspconfig = require("lspconfig")
+      local capabilities = require("blink.cmp").get_lsp_capabilities()
+
+      -- Configure all LSP servers with blink.cmp capabilities
+      lspconfig.lua_ls.setup({ capabilities = capabilities })
+      lspconfig.rust_analyzer.setup({ capabilities = capabilities })
+      lspconfig.ts_ls.setup({ capabilities = capabilities })
+
+      -- Keymaps
+      vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
+      vim.keymap.set("n", "gd", vim.lsp.buf.definition, {})
+      vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, {})
     end
-  }
+  },
 }
