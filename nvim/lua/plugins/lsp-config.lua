@@ -21,13 +21,15 @@ return {
     "neovim/nvim-lspconfig",
     dependencies = { "saghen/blink.cmp" },
     config = function()
-      local lspconfig = require("lspconfig")
       local capabilities = require("blink.cmp").get_lsp_capabilities()
 
-      -- Configure all LSP servers with blink.cmp capabilities
-      lspconfig.lua_ls.setup({ capabilities = capabilities })
-      lspconfig.rust_analyzer.setup({ capabilities = capabilities })
-      lspconfig.ts_ls.setup({ capabilities = capabilities })
+      -- Configure LSP servers using vim.lsp.config (Neovim 0.11+)
+      vim.lsp.config("lua_ls", { capabilities = capabilities })
+      vim.lsp.config("rust_analyzer", { capabilities = capabilities })
+      vim.lsp.config("ts_ls", { capabilities = capabilities })
+
+      -- Enable the LSP servers
+      vim.lsp.enable({ "lua_ls", "rust_analyzer", "ts_ls" })
 
       -- Keymaps
       vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
